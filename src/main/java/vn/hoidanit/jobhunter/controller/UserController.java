@@ -31,11 +31,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated); // always need body
     }
 
-    @ExceptionHandler(value = IdInvalidException.class)
-    public ResponseEntity<String> handleIdException(IdInvalidException idException) {
-        return ResponseEntity.badRequest().body(idException.getMessage());
-    } // only used at UserController -> local => go GlobalException to define global
-      // excep to use at all controller
+    // @ExceptionHandler(value = IdInvalidException.class)
+    // public ResponseEntity<String> handleIdException(IdInvalidException
+    // idException) {
+    // return ResponseEntity.badRequest().body(idException.getMessage());
+    // }
+    // only used at UserController -> local => go GlobalException to define global
+    // excep to use at all controller
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
