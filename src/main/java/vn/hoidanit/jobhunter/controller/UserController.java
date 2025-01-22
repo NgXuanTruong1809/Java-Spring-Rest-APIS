@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.service.UserService;
+import vn.hoidanit.jobhunter.service.error.IdInvalidException;
 
 @RestController
 public class UserController {
@@ -29,8 +31,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated); // always need body
     }
 
+    @ExceptionHandler(value = IdInvalidException.class)
+    public ResponseEntity<String> handleIdException(IdInvalidException idException) {
+        return ResponseEntity.badRequest().body(idException.getMessage());
+    } // only used at UserController -> local => go GlobalException to define global
+      // excep to use at all controller
+
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
+        if (id >= 1500) {
+            throw new IdInvalidException("Id lon hon 1500");
+        }
         this.userService.handleDeleteUser(id);
         // return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
         return ResponseEntity.noContent().build();
