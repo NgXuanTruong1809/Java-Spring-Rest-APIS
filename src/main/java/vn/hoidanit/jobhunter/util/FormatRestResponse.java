@@ -16,7 +16,7 @@ public class FormatRestResponse implements ResponseBodyAdvice {
 
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
-        return true; // bat cu phan hoi nao cung ghi de (format API)
+        return true; // bat cu phan hoi nao (cau hinh controller o day) cung ghi de (format API)
     }
 
     @Override
