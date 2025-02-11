@@ -47,4 +47,8 @@ public class UserService {
         return currentUser;
     }
 
+    public User fetchUserByEmail(String email) {
+        return this.userRepository.findByEmail(email);
+    }
+
 }
