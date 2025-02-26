@@ -1,15 +1,20 @@
 package vn.hoidanit.jobhunter.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import jakarta.validation.ConstraintValidatorContext;
 import vn.hoidanit.jobhunter.domain.User;
-import vn.hoidanit.jobhunter.domain.dto.Meta;
-import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.dto.Pagination.Meta;
+import vn.hoidanit.jobhunter.domain.dto.Pagination.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.dto.UserDTO.UserDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
@@ -48,7 +53,38 @@ public class UserService {
         meta.setTotal(pageUser.getTotalElements());
 
         rsDTO.setMeta(meta);
-        rsDTO.setResult(pageUser.getContent());
+
+        List<UserDTO> userList = new ArrayList<>();
+        for (User user : pageUser.getContent()) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(user.getId());
+            userDTO.setAddress(user.getAddress());
+            userDTO.setAge(user.getAge());
+            userDTO.setUpdatedAt(user.getUpdatedAt());
+            userDTO.setUpdatedBy(user.getUpdatedBy());
+            userDTO.setCreatedAt(user.getCreatedAt());
+            userDTO.setCreatedBy(user.getCreatedBy());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setGender(user.getGender());
+            userDTO.setName(user.getName());
+            userList.add(userDTO);
+        }
+        rsDTO.setResult(userList);
+
+        // remove sensitive data
+        // List<ResUserDTO> listUser = pageUser.getContent()
+        // .stream().map(item -> new ResUserDTO(
+        // item.getId(),
+        // item.getEmail(),
+        // item.getName(),
+        // item.getGender(),
+        // item.getAddress(),
+        // item.getAge(),
+        // item.getUpdatedAt(),
+        // item.getCreatedAt()))
+        // .collect(Collectors.toList());
+
+        // rs.setResult(listUser);
 
         return rsDTO;
     }
@@ -56,9 +92,10 @@ public class UserService {
     public User handleUpdateUser(User requestUser) {
         User currentUser = this.fetchUserById(requestUser.getId());
         if (currentUser != null) {
-            currentUser.setEmail(requestUser.getEmail());
+            currentUser.setGender(requestUser.getGender());
             currentUser.setName(requestUser.getName());
-            currentUser.setPassword(requestUser.getPassword());
+            currentUser.setAge(requestUser.getAge());
+            currentUser.setAddress(requestUser.getAddress());
             currentUser = this.userRepository.save(currentUser);
         }
         return currentUser;
@@ -66,6 +103,10 @@ public class UserService {
 
     public User fetchUserByEmail(String email) {
         return this.userRepository.findByEmail(email);
+    }
+
+    public boolean isValid(String email) {
+        return this.userRepository.existsByEmail(email); // Kiểm tra email có tồn tại không
     }
 
 }

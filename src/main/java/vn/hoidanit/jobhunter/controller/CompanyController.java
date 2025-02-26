@@ -6,7 +6,7 @@ import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.Company;
-import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.dto.Pagination.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 
@@ -33,6 +33,7 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
+    @ApiMessage("create company")
     public ResponseEntity<Company> postCreateCompany(@Valid @RequestBody Company reqCompany) {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.handleCreateCompany(reqCompany));
     }
@@ -47,11 +48,13 @@ public class CompanyController {
     }
 
     @PutMapping("/companies")
+    @ApiMessage("update company")
     public ResponseEntity<Company> putUpdateCompany(@Valid @RequestBody Company reqCompany) {
         return ResponseEntity.ok(this.companyService.handleUpdateCompany(reqCompany));
     }
 
     @DeleteMapping("/companies/{id}")
+    @ApiMessage("delete company")
     public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) {
         this.companyService.handleDeleteCompany(id);
         return ResponseEntity.ok(null);
