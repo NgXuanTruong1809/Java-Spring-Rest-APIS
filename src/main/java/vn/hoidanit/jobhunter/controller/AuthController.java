@@ -8,8 +8,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.LoginDTO.LoginDTO;
 import vn.hoidanit.jobhunter.domain.dto.LoginDTO.ResDTO;
+import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
+    private final UserService userService;
 
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
+            SecurityUtil securityUtil, UserService userService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -39,6 +44,13 @@ public class AuthController {
         // create a token
         String acces_token = this.securityUtil.createToken(authentication);
         ResDTO res = new ResDTO();
+        User currentUser = this.userService.fetchUserByEmail(loginDTO.getUsername());
+        if (currentUser != null) {
+            ResDTO.UserLogin userLogin = new ResDTO.UserLogin(currentUser.getId(), currentUser.getEmail(),
+                    currentUser.getName());
+            res.setUserLogin(userLogin);
+        }
+
         res.setAccessToken(acces_token);
         return ResponseEntity.ok().body(res);
     }
