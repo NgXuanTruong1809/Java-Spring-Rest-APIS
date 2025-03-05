@@ -48,12 +48,14 @@ public class JWTConfiguration {
         };
     }
 
-    // luu data nguoi dung vao security context
+    // luu data nguoi dung vao security context ->>> Khi user đã có JWT và gửi
+    // request với JWT. Giải mã JWT → Lấy quyền → Tạo Authentication. Lưu
+    // Authentication vào SecurityContext?
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthorityPrefix("");
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("hoidanit"); // claim trong securityUltil
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("permission"); // claim trong securityUltil
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return jwtAuthenticationConverter;

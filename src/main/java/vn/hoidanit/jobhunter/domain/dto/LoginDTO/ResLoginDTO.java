@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class ResLoginDTO {
     private String accessToken;
-    private UserLogin UserLogin;
+    private UserLogin userLogin;
 
     @Getter
     @Setter

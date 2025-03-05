@@ -16,10 +16,13 @@ import vn.hoidanit.jobhunter.domain.dto.LoginDTO.LoginDTO;
 import vn.hoidanit.jobhunter.domain.dto.LoginDTO.ResLoginDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -44,11 +47,13 @@ public class AuthController {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());
 
-        // xác thực người dùng => cần viết hàm loadUserByUsername
+        // xác thực người dùng => cần viết hàm loadUserByUsername ->>>> Khi người dùng
+        // login bằng username/password.
+        // Kiểm tra username/password → Tạo Authentication.
+        // Lưu Authentication vào SecurityContext
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // create a token
-        String acces_token = this.securityUtil.createAccessToken(authentication);
         ResLoginDTO res = new ResLoginDTO();
         User currentUser = this.userService.fetchUserByEmail(loginDTO.getUsername());
         if (currentUser != null) {
@@ -56,6 +61,8 @@ public class AuthController {
                     currentUser.getName());
             res.setUserLogin(userLogin);
         }
+
+        String acces_token = this.securityUtil.createAccessToken(authentication, res.getUserLogin());
 
         res.setAccessToken(acces_token);
 
@@ -72,4 +79,22 @@ public class AuthController {
                 .build();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(res);
     }
+
+    @GetMapping("/auth/account")
+    @ApiMessage("fetch account")
+    public ResponseEntity<ResLoginDTO.UserLogin> getAccount() {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+
+        User currentUser = this.userService.fetchUserByEmail(email);
+
+        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
+        if (currentUser != null) {
+            userLogin.setId(currentUser.getId());
+            userLogin.setEmail(email);
+            userLogin.setName(currentUser.getName());
+        }
+        return ResponseEntity.ok().body(userLogin);
+    }
+
 }
