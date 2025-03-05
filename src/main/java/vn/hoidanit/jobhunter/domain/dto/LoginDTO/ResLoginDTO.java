@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResDTO {
+public class ResLoginDTO {
     private String accessToken;
     private UserLogin UserLogin;
 
