@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.validation.ConstraintValidatorContext;
 import vn.hoidanit.jobhunter.domain.User;
-import vn.hoidanit.jobhunter.domain.dto.Pagination.Meta;
 import vn.hoidanit.jobhunter.domain.dto.Pagination.ResultPaginationDTO;
-import vn.hoidanit.jobhunter.domain.dto.UserDTO.UserDTO;
+import vn.hoidanit.jobhunter.domain.dto.UserDTO.ResUserDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
@@ -44,7 +43,7 @@ public class UserService {
     public ResultPaginationDTO fetchAllUser(Specification<User> specification, Pageable pageable) {
         Page<User> pageUser = this.userRepository.findAll(specification, pageable);
         ResultPaginationDTO rsDTO = new ResultPaginationDTO();
-        Meta meta = new Meta();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
 
         meta.setCurrent(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
@@ -54,9 +53,9 @@ public class UserService {
 
         rsDTO.setMeta(meta);
 
-        List<UserDTO> userList = new ArrayList<>();
+        List<ResUserDTO> userList = new ArrayList<>();
         for (User user : pageUser.getContent()) {
-            UserDTO userDTO = new UserDTO();
+            ResUserDTO userDTO = new ResUserDTO();
             userDTO.setId(user.getId());
             userDTO.setAddress(user.getAddress());
             userDTO.setAge(user.getAge());

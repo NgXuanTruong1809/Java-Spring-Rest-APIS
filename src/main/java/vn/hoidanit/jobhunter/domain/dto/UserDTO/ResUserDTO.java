@@ -4,13 +4,17 @@ import java.time.Instant;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 @Setter
 @Getter
-public class UpdatedUserDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ResUserDTO {
     private long id;
     private String name;
     private String email;
@@ -19,6 +23,8 @@ public class UpdatedUserDTO {
     @Enumerated(EnumType.STRING)
     private GenderEnum gender;
     private String address;
+    private Instant createdAt;
+    private String createdBy;
     private Instant updatedAt;
     private String updatedBy;
 }

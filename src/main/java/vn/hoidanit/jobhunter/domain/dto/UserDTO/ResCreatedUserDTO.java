@@ -10,7 +10,7 @@ import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 @Setter
 @Getter
-public class CreatedUserDTO {
+public class ResCreatedUserDTO {
     private long id;
     private String name;
     private String email;
