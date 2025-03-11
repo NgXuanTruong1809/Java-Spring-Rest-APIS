@@ -48,7 +48,9 @@ public class UserController {
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
         User userCreated = this.userService.handleCreateUser(user);
+
         ResCreatedUserDTO cUserDTO = new ResCreatedUserDTO();
+        ResCreatedUserDTO.CompanyUser companyUser = new ResCreatedUserDTO.CompanyUser();
         cUserDTO.setId(userCreated.getId());
         cUserDTO.setAddress(userCreated.getAddress());
         cUserDTO.setAge(userCreated.getAge());
@@ -57,6 +59,11 @@ public class UserController {
         cUserDTO.setEmail(userCreated.getEmail());
         cUserDTO.setGender(userCreated.getGender());
         cUserDTO.setName(userCreated.getName());
+        if (userCreated.getCompany() != null) {
+            companyUser.setId(userCreated.getCompany().getId());
+            companyUser.setName(userCreated.getCompany().getName());
+            cUserDTO.setCompany(companyUser);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(cUserDTO); // always need body
     }
 
@@ -86,7 +93,10 @@ public class UserController {
             throw new IdInvalidException("Người dùng không tồn tại");
         }
         User user = this.userService.fetchUserById(id);
+
         ResUserDTO userDTO = new ResUserDTO();
+        ResUserDTO.CompanyUser companyUser = new ResUserDTO.CompanyUser();
+
         userDTO.setId(user.getId());
         userDTO.setAddress(user.getAddress());
         userDTO.setAge(user.getAge());
@@ -97,6 +107,12 @@ public class UserController {
         userDTO.setEmail(user.getEmail());
         userDTO.setGender(user.getGender());
         userDTO.setName(user.getName());
+        if (user.getCompany() != null) {
+            companyUser.setId(user.getCompany().getId());
+            companyUser.setName(user.getCompany().getName());
+            userDTO.setCompany(companyUser);
+        }
+
         return ResponseEntity.ok(userDTO);
     }
 
@@ -116,7 +132,10 @@ public class UserController {
             throw new IdInvalidException("Người dùng không tồn tại");
         }
         User userCreated = this.userService.handleUpdateUser(user);
+
         ResUpdatedUserDTO cUserDTO = new ResUpdatedUserDTO();
+        ResUpdatedUserDTO.CompanyUser companyUser = new ResUpdatedUserDTO.CompanyUser();
+
         cUserDTO.setId(userCreated.getId());
         cUserDTO.setAddress(userCreated.getAddress());
         cUserDTO.setAge(userCreated.getAge());
@@ -125,6 +144,12 @@ public class UserController {
         cUserDTO.setEmail(userCreated.getEmail());
         cUserDTO.setGender(userCreated.getGender());
         cUserDTO.setName(userCreated.getName());
+        if (userCreated.getCompany() != null) {
+            companyUser.setId(userCreated.getCompany().getId());
+            companyUser.setName(userCreated.getCompany().getName());
+            cUserDTO.setCompany(companyUser);
+        }
+
         return ResponseEntity.ok(cUserDTO);
     }
 }
