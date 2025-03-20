@@ -1,8 +1,14 @@
 package vn.hoidanit.jobhunter.service;
 
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.Skill;
+import vn.hoidanit.jobhunter.domain.dto.Pagination.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.SkillRepository;
 
 @Service
@@ -19,5 +25,39 @@ public class SkillService {
 
     public Skill fetchSkillByName(String name) {
         return this.skillRepository.findByName(name);
+    }
+
+    public Skill fetchSkillById(long id) {
+        Optional<Skill> skillOptional = this.skillRepository.findById(id);
+        if (skillOptional.isPresent()) {
+            return skillOptional.get();
+        }
+        return null;
+    }
+
+    public Skill handleUpdateSkill(Skill reqSkill) {
+        Skill skill = this.fetchSkillById(reqSkill.getId());
+        if (skill != null) {
+            skill.setName(reqSkill.getName());
+            skill = this.handleCreateSkill(skill);
+        }
+        return skill;
+    }
+
+    public ResultPaginationDTO fetchAllSkills(Specification<Skill> specification, Pageable pageable) {
+        Page<Skill> pageSkill = this.skillRepository.findAll(specification, pageable);
+
+        ResultPaginationDTO rsDTO = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
+
+        meta.setCurrent(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+
+        meta.setPages(pageSkill.getTotalPages());
+        meta.setTotal(pageSkill.getTotalElements());
+
+        rsDTO.setMeta(meta);
+        rsDTO.setResult(pageSkill.getContent());
+        return rsDTO;
     }
 }
