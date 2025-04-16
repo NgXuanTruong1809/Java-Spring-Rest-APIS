@@ -12,7 +12,7 @@ public class ResultPaginationDTO {
     @Getter
     @Setter
     public static class Meta {
-        private int current;
+        private int page;
         private int pageSize;
         private int pages;
         private long total;

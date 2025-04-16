@@ -146,7 +146,7 @@ public class JobService {
         ResultPaginationDTO rs = new ResultPaginationDTO();
         ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
-        mt.setCurrent(pageable.getPageNumber() + 1);
+        mt.setPage(pageable.getPageNumber() + 1);
         mt.setPageSize(pageable.getPageSize());
 
         mt.setPages(pageUser.getTotalPages());
