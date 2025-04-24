@@ -8,7 +8,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.Permission;
-import vn.hoidanit.jobhunter.domain.Skill;
 import vn.hoidanit.jobhunter.domain.dto.Pagination.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.PermissionRepository;
 
@@ -69,6 +68,14 @@ public class PermissionService {
         rsDTO.setMeta(meta);
         rsDTO.setResult(pageSPermission.getContent());
         return rsDTO;
+    }
+
+    public void deletePermission(long id) {
+        Permission permission = this.fetchPermissionById(id);
+        if (permission != null) {
+            permission.getRoles().forEach(p -> p.getPermissions().remove(permission));
+            this.permissionRepository.delete(permission);
+        }
     }
 
 }
