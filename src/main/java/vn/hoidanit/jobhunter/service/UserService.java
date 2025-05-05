@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.Pagination.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.dto.UserDTO.ResUserDTO;
@@ -19,17 +20,26 @@ import vn.hoidanit.jobhunter.repository.UserRepository;
 public class UserService {
     private final UserRepository userRepository;
     private final CompanyService companyService;
+    private final RoleService roleService;
 
-    public UserService(UserRepository userRepository, CompanyService companyService) {
+    public UserService(UserRepository userRepository, CompanyService companyService, RoleService roleService) {
         this.userRepository = userRepository;
         this.companyService = companyService;
+        this.roleService = roleService;
     }
 
     public User handleCreateUser(User user) {
+        // check company
         if (user.getCompany() != null) {
             Company cOptional = this.companyService.fetchById(user.getCompany().getId());
             user.setCompany(cOptional);
         }
+        // check role
+        if (user.getRole() != null) {
+            Role rOptional = this.roleService.fetchById(user.getRole().getId());
+            user.setRole(rOptional);
+        }
+
         return this.userRepository.save(user);
     }
 
@@ -77,6 +87,12 @@ public class UserService {
                 companyUser.setName(user.getCompany().getName());
                 userDTO.setCompany(companyUser);
             }
+            if (user.getRole() != null) {
+                ResUserDTO.RoleUser roleUser = new ResUserDTO.RoleUser();
+                roleUser.setId(user.getRole().getId());
+                roleUser.setName(user.getRole().getName());
+                userDTO.setRole(roleUser);
+            }
             userList.add(userDTO);
         }
         rsDTO.setResult(userList);
@@ -107,9 +123,15 @@ public class UserService {
             currentUser.setAge(requestUser.getAge());
             currentUser.setAddress(requestUser.getAddress());
 
+            // check company
             if (requestUser.getCompany() != null) {
                 Company cOptional = this.companyService.fetchById(requestUser.getCompany().getId());
                 currentUser.setCompany(cOptional);
+            }
+            // check role
+            if (requestUser.getRole() != null) {
+                Role rOptional = this.roleService.fetchById(requestUser.getRole().getId());
+                currentUser.setRole(rOptional);
             }
 
             currentUser = this.userRepository.save(currentUser);

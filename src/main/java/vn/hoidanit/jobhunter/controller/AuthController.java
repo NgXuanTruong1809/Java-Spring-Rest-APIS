@@ -60,7 +60,7 @@ public class AuthController {
         User currentUser = this.userService.fetchUserByEmail(loginDTO.getUsername());
         if (currentUser != null) {
             ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(currentUser.getId(), currentUser.getEmail(),
-                    currentUser.getName());
+                    currentUser.getName(), currentUser.getRole());
             res.setUser(userLogin);
         }
 
@@ -119,7 +119,7 @@ public class AuthController {
         User currentUser2 = this.userService.fetchUserByEmail(email);
         if (currentUser2 != null) {
             ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(currentUser2.getId(), currentUser2.getEmail(),
-                    currentUser2.getName());
+                    currentUser2.getName(), currentUser2.getRole());
             res.setUser(userLogin);
         }
 
