@@ -64,7 +64,7 @@ public class AuthController {
             res.setUser(userLogin);
         }
 
-        String access_token = this.securityUtil.createAccessToken(authentication.getName(), res.getUser());
+        String access_token = this.securityUtil.createAccessToken(authentication.getName(), res);
 
         res.setAccessToken(access_token);
 
@@ -96,6 +96,7 @@ public class AuthController {
             userLogin.setId(currentUser.getId());
             userLogin.setEmail(email);
             userLogin.setName(currentUser.getName());
+            userLogin.setRole(currentUser.getRole());
             userGetAccount.setUser(userLogin);
         }
         return ResponseEntity.ok().body(userGetAccount);
@@ -123,7 +124,7 @@ public class AuthController {
             res.setUser(userLogin);
         }
 
-        String acces_token = this.securityUtil.createAccessToken(email, res.getUser());
+        String acces_token = this.securityUtil.createAccessToken(email, res);
 
         res.setAccessToken(acces_token);
 

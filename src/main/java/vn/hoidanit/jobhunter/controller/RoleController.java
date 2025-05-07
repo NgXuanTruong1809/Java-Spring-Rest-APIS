@@ -51,9 +51,10 @@ public class RoleController {
         if (this.roleService.fetchById(reqRole.getId()) == null) {
             throw new IdInvalidException("Role với id =  " + reqRole.getId() + " không tồn tại");
         }
-        if (this.roleService.existsByName(reqRole.getName())) {
-            throw new IdInvalidException("Role với name =  " + reqRole.getName() + " đã tồn tại");
-        }
+        // if (this.roleService.existsByName(reqRole.getName())) {
+        // throw new IdInvalidException("Role với name = " + reqRole.getName() + " đã
+        // tồn tại");
+        // }
         return ResponseEntity.status(HttpStatus.CREATED).body(this.roleService.update(reqRole));
     }
 
