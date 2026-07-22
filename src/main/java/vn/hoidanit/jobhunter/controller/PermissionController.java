@@ -52,7 +52,8 @@ public class PermissionController {
         }
         if (this.permissionService.fetchPermissionByApiPathAndMethodAndModule(reqPermission.getApiPath(),
                 reqPermission.getMethod(), reqPermission.getModule()) != null) {
-            throw new IdInvalidException("permission đã tồn tại");
+            if (this.permissionService.isSameName(reqPermission))
+                throw new IdInvalidException("permission đã tồn tại");
         }
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.permissionService.handleUpdatePermission(reqPermission));

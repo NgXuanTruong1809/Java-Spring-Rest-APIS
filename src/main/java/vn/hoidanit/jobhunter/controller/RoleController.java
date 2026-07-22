@@ -25,6 +25,7 @@ import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -75,6 +76,15 @@ public class RoleController {
         }
         this.roleService.deleteRole(id);
         return ResponseEntity.ok().body(null);
+    }
+
+    @GetMapping("/roles/{id}")
+    @ApiMessage("Fetch role by id")
+    public ResponseEntity<Role> getRoleById(@PathVariable("id") long id) throws IdInvalidException {
+        Role role = this.roleService.fetchById(id);
+        if (role == null)
+            throw new IdInvalidException("Role với id = " + id + " không tồn tại");
+        return ResponseEntity.ok(role);
     }
 
 }

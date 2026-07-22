@@ -2,12 +2,14 @@ package vn.hoidanit.jobhunter.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +17,7 @@ import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.LoginDTO.ReqLoginDTO;
 import vn.hoidanit.jobhunter.domain.dto.LoginDTO.ResLoginDTO;
+import vn.hoidanit.jobhunter.domain.dto.UserDTO.ResCreatedUserDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequestMapping("/api/v1")
 public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final PasswordEncoder passwordEncoder;
     private final SecurityUtil securityUtil;
     private final UserService userService;
 
@@ -37,10 +41,11 @@ public class AuthController {
     private long refreshTokenExpiration;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
-            SecurityUtil securityUtil, UserService userService) {
+            SecurityUtil securityUtil, UserService userService, PasswordEncoder passwordEncoder) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/auth/login")
@@ -162,4 +167,33 @@ public class AuthController {
                 .build();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).body(null);
     }
+
+    @PostMapping("/auth/register")
+    @ApiMessage("Register a new user")
+    public ResponseEntity<ResCreatedUserDTO> register(@Valid @RequestBody User postManUser) throws IdInvalidException {
+        if (this.userService.isValid(postManUser.getEmail())) {
+            throw new IdInvalidException("Tài khoản email đã tồn tại");
+        }
+        String hashPassword = this.passwordEncoder.encode(postManUser.getPassword());
+        postManUser.setPassword(hashPassword);
+        User userCreated = this.userService.handleCreateUser(postManUser);
+
+        ResCreatedUserDTO cUserDTO = new ResCreatedUserDTO();
+        ResCreatedUserDTO.CompanyUser companyUser = new ResCreatedUserDTO.CompanyUser();
+        cUserDTO.setId(userCreated.getId());
+        cUserDTO.setAddress(userCreated.getAddress());
+        cUserDTO.setAge(userCreated.getAge());
+        cUserDTO.setCreatedAt(userCreated.getCreatedAt());
+        cUserDTO.setCreatedBy(userCreated.getCreatedBy());
+        cUserDTO.setEmail(userCreated.getEmail());
+        cUserDTO.setGender(userCreated.getGender());
+        cUserDTO.setName(userCreated.getName());
+        if (userCreated.getCompany() != null) {
+            companyUser.setId(userCreated.getCompany().getId());
+            companyUser.setName(userCreated.getCompany().getName());
+            cUserDTO.setCompany(companyUser);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(cUserDTO);
+    }
+
 }
