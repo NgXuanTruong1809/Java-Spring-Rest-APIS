@@ -56,7 +56,7 @@ public class RoleController {
         // throw new IdInvalidException("Role với name = " + reqRole.getName() + " đã
         // tồn tại");
         // }
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.roleService.update(reqRole));
+        return ResponseEntity.ok().body(this.roleService.update(reqRole));
     }
 
     @GetMapping("/roles")
